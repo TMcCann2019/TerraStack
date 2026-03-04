@@ -1,1 +1,4 @@
-#comment to save file
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrastack

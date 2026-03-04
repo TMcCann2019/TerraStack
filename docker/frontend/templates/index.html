@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TerraStack</title>
+</head>
+<body>
+    <h1>🌍 TerraStack Frontend</h1>
+    <button onclick="checkApi()">Check Backend</button>
+    <p id="result"></p>
+
+    <script>
+        function checkApi() {
+            fetch("/api/")
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("result").innerText = JSON.stringify(data);
+                });
+        }
+    </script>
+</body>
+</html>

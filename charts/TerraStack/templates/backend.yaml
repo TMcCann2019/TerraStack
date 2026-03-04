@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrastack-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrastack-backend
+  template:
+    metadata:
+      labels:
+        app: terrastack-backend
+    spec:
+      containers:
+      - name: backend
+        image: {{ .Values.backend.image }}
+        env:
+        - name: DB_HOST
+          value: terrastack-db
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrastack-backend
+spec:
+  selector:
+    app: terrastack-backend
+  ports:
+    - port: 8000

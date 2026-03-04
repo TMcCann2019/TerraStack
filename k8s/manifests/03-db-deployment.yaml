@@ -1,1 +1,25 @@
-#comment to save file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrastack-db
+  namespace: terrastack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrastack-db
+  template:
+    metadata:
+      labels:
+        app: terrastack-db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+            - name: MYSQL_DATABASE
+              value: terrastack
+          ports:
+            - containerPort: 3306

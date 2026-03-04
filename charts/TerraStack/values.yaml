@@ -1,0 +1,12 @@
+backend:
+  image: terrastack-backend
+
+frontend:
+  image: terrastack-frontend
+
+nginx:
+  image: terrastack-nginx
+
+db:
+  image: postgres:15
+  password: password
