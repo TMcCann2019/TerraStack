@@ -2,23 +2,18 @@
 
 3-Tier App running on Minikube using:
 
-- FastAPI (Swagger API)
 - Flask SPA Frontend
 - PostgreSQL
-- NGINX Reverse Proxy
 - Helm Deployment
+- Minikube
 
 ---
 
 ## 🚀 Quick Start
 
 minikube start
-eval $(minikube docker-env)
+eval $(minikube -p minikube docker-env)
 
-docker build -t terrastack-backend ./docker/backend
-docker build -t terrastack-frontend ./docker/frontend
-docker build -t terrastack-nginx ./docker/nginx
-
-helm install terrastack ./charts/terrastack
-
-minikube service terrastack-nginx
+docker build -t backend ./docker/backend
+docker build -t frontend ./docker/frontend
+docker build -t DB ./docker/DB
