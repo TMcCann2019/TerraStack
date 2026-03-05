@@ -1,0 +1,3 @@
+# Ignore Docker build artifacts
+docker/*.tar
+*.tar
