@@ -16,8 +16,9 @@ spec:
       containers:
         - name: frontend
           image: {{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag }}
+          imagePullPolicy: {{ .Values.image.frontend.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.frontend.port }}
+            - containerPort: 5000
           envFrom:
             - configMapRef:
                 name: terrastack-config

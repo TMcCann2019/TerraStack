@@ -1,12 +1,14 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-svc
+  name: frontend-alb
   namespace: terrastack
 spec:
   selector:
     app: frontend
   ports:
-    - port: {{ .Values.service.frontend.port }}
-      targetPort: {{ .Values.service.frontend.port }}
-  type: LoadBalancer
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: {{ .Values.service.frontend.type }}

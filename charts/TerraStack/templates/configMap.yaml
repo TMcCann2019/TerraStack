@@ -4,8 +4,7 @@ metadata:
   name: terrastack-config
   namespace: terrastack
 data:
-  DB_HOST: db
-  DB_NAME: terrastack
+  BACKEND_URL: "http://api-svc:8081"
+  DB_HOST: "db-svc"
   DB_PORT: "5432"
-  BACKEND_HOST: backend
-  BACKEND_PORT: "8000"
+  DB_NAME: {{ .Values.db.name }}

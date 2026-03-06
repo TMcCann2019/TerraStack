@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-svc
+  name: api-svc
   namespace: terrastack
 spec:
   selector:
     app: backend
   ports:
-    - port: {{ .Values.service.backend.port }}
-      targetPort: {{ .Values.service.backend.port }}
-  type: ClusterIP
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: {{ .Values.service.backend.type }}

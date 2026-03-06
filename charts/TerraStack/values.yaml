@@ -1,31 +1,35 @@
 replicaCount:
-  db: 1
+  frontend: 2
   backend: 1
-  frontend: 1
+  db: 1
 
 image:
-  db:
-    repository: terrastack-db
-    tag: latest
-  backend:
-    repository: terrastack-backend
-    tag: latest
   frontend:
     repository: terrastack-frontend
     tag: latest
+    pullPolicy: IfNotPresent
+  backend:
+    repository: terrastack-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  db:
+    repository: terrastack-db
+    tag: latest
+    pullPolicy: IfNotPresent
 
 service:
-  db:
-    port: 5432
-  backend:
-    port: 8000
   frontend:
-    port: 5000
-
-persistence:
+    type: LoadBalancer
+    port: 80
+  backend:
+    type: ClusterIP
+    port: 8081
   db:
-    size: 1Gi
+    type: ClusterIP
+    port: 5432
 
-secret:
-  dbUser: terraben
-  dbPassword: terramach
+db:
+  name: terrastack
+  user: terrastack
+  password: terrastack
+  dataStorage: 1Gi

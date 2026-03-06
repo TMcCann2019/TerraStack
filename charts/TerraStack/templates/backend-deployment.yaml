@@ -16,8 +16,9 @@ spec:
       containers:
         - name: backend
           image: {{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}
+          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.backend.port }}
+            - containerPort: 8081
           envFrom:
             - configMapRef:
                 name: terrastack-config
