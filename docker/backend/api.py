@@ -1,45 +1,59 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 import psycopg2
-from psycopg2.extras import RealDictCursor
 import os
-from contextlib import closing
 
-app = FastAPI(title="TerraStack Yard Work API")
+app = FastAPI(title="TerraStack Backend")
 
+# Read DB connection info from environment variables (Secrets/ConfigMap)
 DB_HOST = os.getenv("DB_HOST", "db-svc")
-DB_PORT = int(os.getenv("DB_PORT", 5432))
+DB_PORT = int(os.getenv("DB_PORT", "5432"))
 DB_NAME = os.getenv("DB_NAME", "terrastack")
 DB_USER = os.getenv("DB_USER", "terrastack")
 DB_PASS = os.getenv("DB_PASSWORD", "terrastack")
 
-def get_db_connection():
-    return psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS,
-        cursor_factory=RealDictCursor
-    )
+@app.get("/")
+def read_root():
+    return {"message": "TerraStack Backend Running"}
 
-@app.get("/yard-quote")
-def yard_quote(sqft: int = Query(..., gt=0, description="Square footage of yard")):
-    """
-    Return suggested yard work task and price based on square footage.
-    """
+@app.get("/health")
+def health():
     try:
-        with closing(get_db_connection()) as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT task, estimated_hours, rate_per_hour,
-                           estimated_hours * rate_per_hour AS total_cost
-                    FROM yard_quotes
-                    WHERE %s BETWEEN min_sqft AND max_sqft
-                    LIMIT 1
-                """, (sqft,))
-                result = cur.fetchone()
-                if not result:
-                    return {"message": "No quote available for this size"}
-                return result
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS
+        )
+        conn.close()
+        return {"database": "connected"}
+    except Exception as e:
+        return {"database": "error", "details": str(e)}
+
+@app.get("/quote")
+def get_quote(sqft: float):
+    if sqft <= 0:
+        raise HTTPException(status_code=400, detail="Square footage must be greater than 0")
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS
+        )
+        cur = conn.cursor()
+        cur.execute("SELECT quote, author FROM quotes ORDER BY RANDOM() LIMIT 1")
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        if result:
+            quote_text, author = result
+            # Example pricing logic based on sqft
+            price_per_sqft = 0.5  # $0.50 per sq ft for yard work
+            price = sqft * price_per_sqft
+            return {"quote": quote_text, "author": author, "sqft": sqft, "estimated_price": price}
+        else:
+            return {"error": "No quotes found"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
