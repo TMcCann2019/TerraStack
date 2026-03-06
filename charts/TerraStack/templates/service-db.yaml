@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: db-svc
   namespace: terrastack
-  name: backend-svc
 spec:
   selector:
-    app: backend
+    app: db
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 5432
+      targetPort: 5432
   type: ClusterIP

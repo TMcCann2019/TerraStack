@@ -1,6 +1,7 @@
-FROM mysql:latest
-ENV MYSQL_DATABASE=Terradb \
-    MYSQL_ROOT_PASSWORD=TerraMach \
-    MYSQL_USER=TerraBen \
-    MYSQL_PASSWORD=TerraMach
+FROM postgres:15
+
+ENV POSTGRES_DB=terrastack \
+    POSTGRES_USER=postgres \
+    POSTGRES_PASSWORD=password
+
 COPY init.sql /docker-entrypoint-initdb.d/

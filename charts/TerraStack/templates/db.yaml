@@ -4,7 +4,7 @@ metadata:
   name: db
   namespace: terrastack
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: db
@@ -14,27 +14,21 @@ spec:
         app: db
     spec:
       containers:
-      - name: db
-        image: terrastack-db:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 8000
-        env:
-          - name: model_url
-            value: http://model-svc.terrastack.svc.cluster.local:8081
-          - name: DB_HOST
-            value: database-svc.terrastack.svc.cluster.local
-          - name: DB_PORT
-            value: "3306"
-          - name: DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: database-secret
-                key: username
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: database-secret
-                key: password
-          - name: DB_NAME
-            value: terrastack-db
+        - name: db
+          image: terrastack-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: terrastack
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: password
