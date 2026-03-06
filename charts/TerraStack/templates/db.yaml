@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: db
   namespace: terrastack
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: backend
+      app: db
   template:
     metadata:
       labels:
-        app: backend
+        app: db
     spec:
       containers:
-      - name: backend
-        image: backend:latest
+      - name: db
+        image: terrastack-db:latest
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 8000

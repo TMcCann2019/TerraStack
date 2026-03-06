@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: terrastack
-  name: model
+  name: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: model
+      app: backend
   template:
     metadata:
       labels:
-        app: model
+        app: backend
     spec:
       containers:
-        - name: model
-          image: api:latest
+        - name: backend
+          image: terrastack-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
@@ -28,7 +28,7 @@ metadata:
   name: model-svc
 spec:
   selector:
-    app: model
+    app: backend
   ports:
     - protocol: TCP
       port: 8081
