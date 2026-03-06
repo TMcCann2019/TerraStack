@@ -1,16 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-initdb
+  name: terrastack-config
   namespace: terrastack
 data:
-  init.sql: |
-    CREATE TABLE IF NOT EXISTS quotes (
-      id SERIAL PRIMARY KEY,
-      quote TEXT NOT NULL,
-      author VARCHAR(255)
-    );
-
-    INSERT INTO quotes (quote, author) VALUES
-      ('Be the change you want to see in the world.', 'Gandhi'),
-      ('Master patterns in life, and you''ll never suffer is the secret', 'someone');
+  DB_HOST: db
+  DB_NAME: terrastack
+  DB_PORT: "5432"
+  BACKEND_HOST: backend
+  BACKEND_PORT: "8000"

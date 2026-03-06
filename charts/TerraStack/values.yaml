@@ -1,9 +1,31 @@
-backend:
-  image: backend
+replicaCount:
+  db: 1
+  backend: 1
+  frontend: 1
 
-frontend:
-  image: frontend
+image:
+  db:
+    repository: terrastack-db
+    tag: latest
+  backend:
+    repository: terrastack-backend
+    tag: latest
+  frontend:
+    repository: terrastack-frontend
+    tag: latest
 
-db:
-  image: postgres:15
-  password: password
+service:
+  db:
+    port: 5432
+  backend:
+    port: 8000
+  frontend:
+    port: 5000
+
+persistence:
+  db:
+    size: 1Gi
+
+secret:
+  dbUser: terraben
+  dbPassword: terramach

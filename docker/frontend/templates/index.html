@@ -1,13 +1,42 @@
-<h1>TerraStack</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yard Work Quotes</title>
+</head>
+<body>
+    <h1>TerraStack Yard Work Quotes</h1>
+    <form id="quote-form">
+        <label for="sqft">Yard Square Footage:</label>
+        <input type="number" id="sqft" name="sqft" required>
+        <button type="submit">Get Quote</button>
+    </form>
+    <div id="quote-result"></div>
 
-<button onclick="checkBackend()">Check Backend</button>
-
-<p id="result"></p>
-
-<script>
-async function checkBackend() {
-    const response = await fetch("/check-backend");
-    const data = await response.json();
-    document.getElementById("result").innerText = JSON.stringify(data);
-}
-</script>
+    <script>
+        const form = document.getElementById('quote-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const sqft = document.getElementById('sqft').value;
+            const resDiv = document.getElementById('quote-result');
+            resDiv.innerHTML = 'Loading...';
+            try {
+                const response = await fetch('/get-yard-quote', {
+                    method: 'POST',
+                    body: new URLSearchParams({sqft})
+                });
+                const data = await response.json();
+                if(data.error) {
+                    resDiv.innerHTML = 'Error: ' + data.error;
+                } else {
+                    resDiv.innerHTML = `Task: ${data.task}<br>
+                                        Hours: ${data.estimated_hours}<br>
+                                        Rate/hr: $${data.rate_per_hour}<br>
+                                        Total Cost: $${data.total_cost}`;
+                }
+            } catch(err) {
+                resDiv.innerHTML = 'Error fetching quote';
+            }
+        });
+    </script>
+</body>
+</html>

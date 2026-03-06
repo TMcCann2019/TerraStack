@@ -5,8 +5,9 @@ metadata:
   namespace: terrastack
 spec:
   capacity:
-    storage: 1Gi
+    storage: {{ .Values.persistence.db.size }}
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mnt/data/terrastack
+    path: /mnt/data/terrastack-db
