@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>TerraStack</title>
-</head>
-<body>
-    <h1>🌍 TerraStack Frontend</h1>
-    <button onclick="checkApi()">Check Backend</button>
-    <p id="result"></p>
+<h1>TerraStack</h1>
 
-    <script>
-        function checkApi() {
-            fetch("/api/")
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById("result").innerText = JSON.stringify(data);
-                });
-        }
-    </script>
-</body>
-</html>
+<button onclick="checkBackend()">Check Backend</button>
+
+<p id="result"></p>
+
+<script>
+async function checkBackend() {
+    const response = await fetch("/check-backend");
+    const data = await response.json();
+    document.getElementById("result").innerText = JSON.stringify(data);
+}
+</script>
