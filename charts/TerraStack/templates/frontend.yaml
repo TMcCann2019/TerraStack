@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: terrastack
-  name: terrastack-frontend
+  name: frontend
 spec:
   replicas: 2
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: localhost:54030/frontend:latest
+        image: frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
