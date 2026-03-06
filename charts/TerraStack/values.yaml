@@ -1,11 +1,8 @@
 backend:
-  image: terrastack-backend
+  image: backend
 
 frontend:
-  image: terrastack-frontend
-
-nginx:
-  image: terrastack-nginx
+  image: frontend
 
 db:
   image: postgres:15

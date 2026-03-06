@@ -1,29 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: terrastack
   name: terrastack-frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: terrastack-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: terrastack-frontend
+        app: frontend
     spec:
       containers:
       - name: frontend
-        image: {{ .Values.frontend.image }}
+        image: localhost:54030/frontend:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: terrastack-frontend
-spec:
-  selector:
-    app: terrastack-frontend
-  ports:
-    - port: 5000
+        env:
+        - name: backend_url
+          value: "https://backend-svc.terrastack.svc.cluster.local:8080"
