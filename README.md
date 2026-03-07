@@ -19,10 +19,10 @@ The application stack consists of:
 
 Install the following tools before starting:
 
-- Docker  
-- Minikube  
-- kubectl  
-- Helm  
+- Docker (https://docs.docker.com/get-started/introduction/get-docker-desktop/)
+- Minikube (https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
+- kubectl (https://kubernetes.io/docs/tasks/tools/)
+- Helm (https://helm.sh/docs/intro/install)
 
 Minimum system requirements:
 
@@ -193,4 +193,5 @@ kubectl describe pod <backend-pod> -n terrastack
 - Images are **built locally inside Minikube**
 - No external container registry is required
 - Helm manages the entire KLubernetes stack
+
 - All services use **ClusterIP**, with frontend exposed via port-forward
