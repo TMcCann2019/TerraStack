@@ -28,10 +28,12 @@
                 if(data.error) {
                     resDiv.innerHTML = 'Error: ' + data.error;
                 } else {
-                    resDiv.innerHTML = `Task: ${data.task}<br>
-                                        Hours: ${data.estimated_hours}<br>
-                                        Rate/hr: $${data.rate_per_hour}<br>
-                                        Total Cost: $${data.total_cost}`;
+                    resDiv.innerHTML = `
+                    Quote: ${data.quote}<br>
+                    Author: ${data.author}<br>
+                    Yard Size: ${data.sqft} sqft<br>
+                    Estimated Cost: $${data.estimated_price}
+                    `;
                 }
             } catch(err) {
                 resDiv.innerHTML = 'Error fetching quote';

@@ -1,20 +1,59 @@
-# TerraStack Deployment on Minikube
+### TerraStack – Helm Deployment on Minikube 🚀
 
-This guide explains how to deploy the **TerraStack** full-stack application using **Minikube**. It assumes you are using the code structure from this repository.
+This guide explains how to deploy the **TerraStack 3-tier application** locally using **Minikube** and **Helm**.
 
-## Prerequisites
+The application stack consists of:
 
-- [Docker](https://docs.docker.com/get-docker/) installed  
-- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed  
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed  
-- At least **4GB RAM** allocated to Minikube  
+- PostgreSQL Database
+
+- Python API Backend
+
+- Python Frontend
+
+- Helm Charts for Kubernetes deployment
 
 ---
 
-## Step 1: Start Minikube
+# Architecture
 
-```bash
+User Browser
+|
+\/
+Frontend (Python/Flask)
+|
+\/
+Backend API (Swagger/ Flask)
+|
+\/
+PostgreSQL Database
+
+
+All components are deployed inside the **Kubernetes `terrastack` namespace** using **Helm**.
+
+---
+
+# Prerequisites
+
+Install the following tools before starting:
+
+- Docker  
+- Minikube  
+- kubectl  
+- Helm  
+
+Minimum system requirements:
+
+- **4GB RAM**
+- **2 CPU**
+
+---
+
+# Step 1 — Start Minikube
+
+Start the cluster using Docker as the driver.
+
 # Start Minikube with Docker driver
+```bash
 export MINIKUBE_ROOTLESS=false
 minikube start --driver=docker --container-runtime=docker
 # Enable the registry addon:
@@ -40,76 +79,89 @@ docker build -t terrastack-backend ./docker/backend
 # Frontend image
 docker build -t terrastack-frontend ./docker/frontend
 ```
+These images will now be available directly inside Minikube.
 
 ## Step 4: Create Namespace
 ```bash
 kubectl create namespace terrastack
 ```
 
-## Step 5: Deploy Persistent Storage
-Apply your PV and PVC first, so the database can initialize correctly:
+## Step 5: Deploy TerraStack with Helm
+Install the Helm chart.
 ```bash
-kubectl apply -f charts/TerraStack/templates/pv.yaml -n terrastack
-kubectl apply -f charts/TerraStack/templates/pvc.yaml -n terrastack
+helm install terrastack ./charts/TerraStack \
+    -n terrastack
 ```
 
-## Step 6: Deploy Secrets and ConfigMaps
+Helm will deploy:
+- Persistent Volume
+- Persistent Volume Claim
+- PostgreSQL Deployment
+- Backend API Deployment
+- Frontend Deployment
+- Services
+- ConfigMaps
+- Secrets
+
+## Step 6: Verify Deployment
+Check that all pods are running:
 ```bash
-kubectl apply -f charts/TerraStack/secret.yaml -n terrastack
-kubectl apply -f charts/TerraStack/templates/configMap.yaml -n terrastack
+kubectl get pods -n terrastack
 ```
 
-## Step 7: Deploy Database
+Expected output should include:
 ```bash
-kubectl apply -f charts/TerraStack/templates/db.yaml -n terrastack
-```
-Wait for the DB pods to be ready:
-```bash
-kubectl get pods -n terrastack -w
+db-xxxxx
+backend-xxxxx
+frontend-xxxxx
 ```
 
-## Step 8: Deploy Backend (API)
+Check services:
 ```bash
-kubectl apply -f charts/TerraStack/templates/api.yaml -n terrastack
-```
-Restart backend to ensure it connects to the database:
-```bash
-kubectl rollout restart deployment/backend -n terrastack
+kubectl get svc -n terrastack
 ```
 
-## Step 9: Deploy Frontend
-```bash
-kubectl apply -f charts/TerraStack/templates/frontend.yaml -n terrastack
-```
-Restart frontend:
-```bash
-kubectl rollout restart deployment/frontend -n terrastack
-```
-
-## Step 10: Deploy Services
-Apply the services:
-```bash
-kubectl apply -f charts/TerraStack/templates/service-backend.yaml -n terrastack
-kubectl apply -f charts/TerraStack/templates/service-frontend.yaml -n terrastack
-kubectl apply -f charts/TerraStack/templates/service-db.yaml -n terrastack
-```
-
-## Step 11: Port Forward to Access Frontend
+## Step 7: Access the Application
+Forward the frontend service to your local machine.
 ```bash
 kubectl port-forward service/frontend-alb 8080:80 -n terrastack
 ```
-Visit: http://localhost:8080 in your browser.
 
-## Step 12: Test Backend Health
-From inside the cluster or using port-forward:
+Open your browser:
+```http://localhost:8080```
+
+## Step 8: Test Backend Health
+Verify backend connectivity from inside the cluster.
+```bash
+kubectl get pods -n terrastack
+```
+Then run:
 ```bash
 kubectl exec -it <frontend-pod-name> -n terrastack -- curl http://api-svc:8081/health
 ```
-- ```<frontend-pod-name>``` -> use the actual pod name from ```kubectl get pods -n terrastack```
-- Should return JSON indication the DB connection status.
 
-## Step 13: Rolling Updates (Optional)
-If you rebuild any image:
+Example successful response:
+```json
+{
+    "status": "healthy",
+    "database": "connected"
+}
+```
+
+## Updating the Application
+If you rebuild an image:
+
+example:
+```bash
+docker build -t terrastack-backend ./docker/backend
+```
+
+Upgrade the Helm release:
+```bash
+helm upgrade terrastack ./charts/TerraStack -n terrastack
+```
+
+If necessary, restart deployments:
 ```bash
 # For DB
 kubectl rollout restart deployment/db -n terrastack
@@ -121,7 +173,41 @@ kubectl rollout restart deployment/backend -n terrastack
 kubectl rollout restart deployment/frontend -n terrastack
 ```
 
+## Uninstall TerraStack
+To remove the entire stack:
+```bash
+helm uninstall terrastack -n terrastack
+```
+
+Delete the namespace:
+```bash
+kubectl delete namespace terrastack
+```
+
+## Troubleshooting
+# Pods Not Starting
+Check logs:
+```bash
+kubectl logs <pod-name> -n terrastack
+```
+
+---
+
+# PVC Not Binding
+Verify persistent storage:
+```bash
+kubectl get pvc -n terrastack
+```
+
+---
+# Backend Cannot Reach Database
+Check environment variables
+```bash
+kubectl describe pod <backend-pod> -n terrastack
+```
+
 ## Notes
-- Make sure **PVC is bound** before the backend starts, or DB connections will fail.
-- All services use **ClusterIP**, frontend is exposed via port-forward.
-- Images are built locally and used by Minikube; no need for a remote registry.
+- Images are **built locally inside Minikube**
+- No external container registry is required
+- Helm manages the entire KLubernetes stack
+- All services use **ClusterIP**, with frontend exposed via port-forward
