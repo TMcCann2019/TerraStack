@@ -14,23 +14,6 @@ The application stack consists of:
 
 ---
 
-# Architecture
-
-User Browser
-|
-\/
-Frontend (Python/Flask)
-|
-\/
-Backend API (Swagger/ Flask)
-|
-\/
-PostgreSQL Database
-
-
-All components are deployed inside the **Kubernetes `terrastack` namespace** using **Helm**.
-
----
 
 # Prerequisites
 
@@ -51,24 +34,24 @@ Minimum system requirements:
 # Step 1 — Start Minikube
 
 Start the cluster using Docker as the driver.
-
-# Start Minikube with Docker driver
 ```bash
 export MINIKUBE_ROOTLESS=false
 minikube start --driver=docker --container-runtime=docker
-# Enable the registry addon:
+```
+Enable the internal registry addon:
+```bash
 minikube addons enable registry
 ```
 
-## Step 2: Set Minikube Docker Environment
-This is to help make sure your local Docker builds go directly into the Minikube cluster:
+## Step 2: Configure Docker to Use Minikube
+This ensures Docker images you build locally are available inside the cluster:
 
 ```bash
 eval $(minikube -p minikube docker-env)
 ```
 
-## Step 3: Build Docker Images
-Build all application images using the Dockerfiles in the repo:
+## Step 3: Build Application Images
+Build all TerraStack service images:
 ```bash
 # Database image
 docker build -t terrastack-db ./docker/db
@@ -128,7 +111,9 @@ kubectl port-forward service/frontend-alb 8080:80 -n terrastack
 ```
 
 Open your browser:
-```http://localhost:8080```
+```bash
+http://localhost:8080
+```
 
 ## Step 8: Test Backend Health
 Verify backend connectivity from inside the cluster.
@@ -150,8 +135,6 @@ Example successful response:
 
 ## Updating the Application
 If you rebuild an image:
-
-example:
 ```bash
 docker build -t terrastack-backend ./docker/backend
 ```
@@ -185,7 +168,7 @@ kubectl delete namespace terrastack
 ```
 
 ## Troubleshooting
-# Pods Not Starting
+### Pods Not Starting
 Check logs:
 ```bash
 kubectl logs <pod-name> -n terrastack
@@ -193,14 +176,14 @@ kubectl logs <pod-name> -n terrastack
 
 ---
 
-# PVC Not Binding
+### PVC Not Binding
 Verify persistent storage:
 ```bash
 kubectl get pvc -n terrastack
 ```
 
 ---
-# Backend Cannot Reach Database
+### Backend Cannot Reach Database
 Check environment variables
 ```bash
 kubectl describe pod <backend-pod> -n terrastack
