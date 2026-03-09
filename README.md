@@ -1,4 +1,59 @@
-### TerraStack – Helm Deployment on Minikube 🚀
+# TerraStack
+
+TerraStack is a **containerized 3-tier application deployed to Kubernetes using Helm**.  
+The project demonstrates a full DevOps workflow including:
+
+- Docker containerization
+- Kubernetes deployments
+- Helm package management
+- Persistent storage with PV/PVC
+- Secrets and ConfigMaps
+- Local Kubernetes development with Minikube
+
+The stack consists of a **Flask frontend, Flask API backend, and PostgreSQL database** deployed inside a Kubernetes cluster.
+
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-blue)
+![Helm](https://img.shields.io/badge/Helm-Package%20Manager-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
+![Python](https://img.shields.io/badge/Python-Backend-blue)
+
+## Architecture Diagram
+```mermaid
+graph TD;
+    U[User Browser] --> S[Frontend Service];
+    S --> F[Frontend Pod];
+
+    F --> A[Backend Service];
+    A --> B[Backend Pod];
+
+    B --> D[(PostgreSQL Database)];
+
+    subgraph Kubernetes Cluster;
+        S;
+        F;
+        A;
+        B;
+        D;
+    end;
+```
+
+## Quick Start Guide
+```bash
+# start cluster
+./scripts/setup.sh
+
+# build images
+./scripts/build.sh
+
+# deploy stack
+./scripts/deploy.sh
+
+# access application
+kubectl port-forward service/frontend-alb 8080:80 -n terrastack
+```
+
+## TerraStack – Helm Deployment on Minikube 🚀
 
 This guide explains how to deploy the **TerraStack 3-tier application** locally using **Minikube** and **Helm**.
 
@@ -15,7 +70,7 @@ The application stack consists of:
 ---
 
 
-# Prerequisites
+## Prerequisites
 
 Install the following tools before starting:
 
@@ -31,7 +86,7 @@ Minimum system requirements:
 
 ---
 
-# Step 1 — Start Minikube
+## Step 1 — Start Minikube
 
 Start the cluster using Docker as the driver.
 ```bash
