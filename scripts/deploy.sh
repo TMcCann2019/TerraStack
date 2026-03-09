@@ -5,8 +5,8 @@ eval $(minikube -p minikube docker-env)
 
 docker build -t terrastack-backend ./docker/backend
 docker build -t terrastack-frontend ./docker/frontend
-docker build -t terrastack-nginx ./docker/nginx
+docker build -t terrastack-db ./docker/db
 
 kubectl create ns terrastack
 
-helm install terrastack ./charts/terrastack
+helm install terrastack ./charts/TerraStack -n terrastack
